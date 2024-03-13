@@ -18,7 +18,7 @@ A web UI to create PrometheusRules on Kubernetes. Supports kube-prometheus-stack
 
 1. Clone the repository 
 ```bash
-git clone https://github.com/robusta-dev/prometheus-operator-ui.git && cd prom-rule-editor
+git clone https://github.com/robusta-dev/prometheus-operator-ui.git && cd prometheus-operator-ui
 ```
 
 2. Install dependencies

@@ -49,17 +49,18 @@ def generate_prometheus_rule():
 def add_alert():
 
     with st.form('prom-alert'):
-        ss.group_name = st.text_input(label="Group Name: A group can have multiple alert rules in it")
-        ss.alert = st.text_input(label="Alert Name: Ex: HighErrorRate")
-        ss.expr = st.text_input(label="PromQL expression: If this conditon evaluates to true, the alert will fire")
-        ss.for_duration = st.text_input(label="How long before the alert fires, once the PromQL condition is true? Ex: 5m - Five Minutes")
-        ss.severity = st.selectbox("Choose a severity level", ["critical", "warning", "info"])
-        ss.summary = st.text_input(label="Summary: ", value=f"This is an alert for {ss.alert}")
-        ss.description = st.text_input(label="Description: [optional]")
+        ss.group_name = st.text_input(label="Group Name", help="When using the Prometheus Operator, Prometheus Rules are defined in named groups. The name is informational only and does not impact anything.", value="group-1")
+        ss.alert = st.text_input(label="Alert Name", placeholder="HighErrorRate")
+        ss.expr = st.text_input(label="PromQL Expression", help="When this PromQL condition evaluates to true, the alert will fire. (But whether it fires immediately or not depends on the For Duration.)")
+        ss.for_duration = st.text_input(label="For Duration", help="How long must the PromQL condition continue to be true for the alert to fire. This is used to prevent flapping alerts where a condition is briefly true and then reverts to being false.", value="5m")
+        ss.severity = st.selectbox("Severity Level", ["critical", "warning", "info"])
+        ss.summary = st.text_input(label="Summary (optional)", placeholder="Here is a one liner about the alert...")
+        ss.description = st.text_input(label="Description (optional)", placeholder="Here is a longer description of the alert...")
 
-        generate_button = st.form_submit_button("Generate", on_click=generate_prometheus_rule)
+        generate_button = st.form_submit_button("Generate")
+        generate_prometheus_rule()
         if generate_button:
-            mandatory_fields = [ss.group_name, ss.alert, ss.expr, ss.for_duration, ss.severity, ss.summary]
+            mandatory_fields = [ss.group_name, ss.alert, ss.expr, ss.for_duration, ss.severity]
             if all(mandatory_fields):
                 st.code(body=ss.generated_yaml, language="yaml")
             else:
@@ -71,7 +72,6 @@ def get_name_and_namespace(prometheus):
     return prometheus[0]['metadata']['namespace'],prometheus[0]['metadata']['name']
 
 def initialize_prometheus_instances(_v1_client, _custom_objects_client):
-
     ss.namespaces = get_all_namespaces(_v1_client)
     if 'initialized' not in ss or not ss.initialized:
         ss.all_prometheus = get_all_prometheuses(ss.namespaces, _custom_objects_client)
@@ -130,7 +130,7 @@ def main():
         ss.setdefault(name, value)
 
     
-    st.title("PrometheusRule Generator")           
+    st.title("Define a new PrometheusRule")           
     if ss.selected_prometheus:
         st.markdown(f"Generate a PrometheusRule for **{ss.selected_prometheus_name}** in the namespace **{ss.selected_namespace}**")       
     add_alert()

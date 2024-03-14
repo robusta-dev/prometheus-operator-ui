@@ -57,7 +57,8 @@ def add_alert():
         ss.summary = st.text_input(label="Summary (optional)", placeholder="Here is a one liner about the alert...")
         ss.description = st.text_input(label="Description (optional)", placeholder="Here is a longer description of the alert...")
 
-        generate_button = st.form_submit_button("Generate", on_click=generate_prometheus_rule)
+        generate_button = st.form_submit_button("Generate")
+        generate_prometheus_rule()
         if generate_button:
             mandatory_fields = [ss.group_name, ss.alert, ss.expr, ss.for_duration, ss.severity]
             if all(mandatory_fields):
